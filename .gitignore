@@ -1,0 +1,6 @@
+.sonarlint/
+vendor/
+tmp/
+
+*.lock
+*.log

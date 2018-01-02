@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="synology-dlm-rarbg" default="build">
+    <autoloader />
+
+    <property environment="env" />
+
+    <property name="bin.dir" value="${project.basedir}/bin" />
+    <property name="dlm.dir" value="${project.basedir}/dlm" />
+    <property name="tmp.dir" value="${project.basedir}/tmp" />
+
+    <property name="tmp.bin.dir" value="${tmp.dir}/bin" />
+    <property name="tmp.obj.dir" value="${tmp.dir}/obj" />
+    <property name="tmp.out.dir" value="${tmp.dir}/out" />
+    <property name="tmp.test.dir" value="${tmp.dir}/test" />
+
+
+
+    <target name="prepare.version" depends="prepare.dlm">
+        <if>
+            <and>
+                <isset property="env.DLM_PACKAGE_VERSION" />
+                <not>
+                    <equals arg1="${env.DLM_PACKAGE_VERSION}" arg2="0.0.0" />
+                </not>
+            </and>
+            <then>
+                <phing phingfile="build.xml" dir="./dlm" target="prepare.version" inheritAll="true" haltonfailure="true" />
+            </then>
+        </if>
+    </target>
+
+    <target name="prepare.dlm">
+        <composer command="update" composer="${bin.dir}/composer.phar">
+            <arg value="-q" />
+            <arg value="-d" />
+            <arg path="${dlm.dir}" />
+            <arg value="-n" />
+        </composer>
+    </target>
+
+
+
+    <target name="clean" depends="prepare.clean">
+        <phing phingfile="build.xml" dir="${dlm.dir}" target="clean" inheritAll="true" haltonfailure="true" />
+    </target>
+
+    <target name="prepare.clean" depends="prepare.dlm">
+        <delete dir="${tmp.dir}" includeemptydirs="true" quiet="true" failonerror="false" />
+    </target>
+
+
+
+    <target name="build" depends="prepare.build">
+        <phing phingfile="build.xml" dir="${dlm.dir}" target="build" inheritAll="true" haltonfailure="true" />
+    </target>
+
+    <target name="prepare.build" depends="prepare.dlm">
+        <mkdir dir="${tmp.dir}" />
+
+        <composer command="update" composer="${bin.dir}/composer.phar">
+            <arg value="-q" />
+            <arg value="-n" />
+        </composer>
+    </target>
+
+
+
+    <target name="test" depends="prepare.build">
+        <phing phingfile="build.xml" dir="${dlm.dir}" target="test" inheritAll="true" haltonfailure="true" />
+    </target>
+
+
+
+    <target name="rebuild" depends="prepare.clean,prepare.build">
+        <phing phingfile="build.xml" dir="${dlm.dir}" target="rebuild" inheritAll="true" haltonfailure="true" />
+    </target>
+
+
+
+    <target name="release" depends="prepare.clean,prepare.build">
+        <phing phingfile="build.xml" dir="${dlm.dir}" target="release" inheritAll="true" haltonfailure="true" />
+    </target>
+</project>

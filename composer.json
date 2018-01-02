@@ -1,0 +1,10 @@
+{
+    "name": "mcartoixa/synology-dlm-rarbg",
+    "description": "RarBG search module for Synology Download Manager",
+    "type": "project",
+    "license": "MIT",
+    "require-dev": {
+        "phing/phing": "2.*",
+        "pear/archive_tar": "*"
+    }
+}

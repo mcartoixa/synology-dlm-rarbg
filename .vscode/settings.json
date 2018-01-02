@@ -1,0 +1,21 @@
+// Place your settings in this file to overwrite default and user settings.
+{
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "files.eol": "\r\n",
+    "files.exclude": {
+        "**/.git": true,
+        "**/*.lock": true,
+        "**/*.log": true,
+        ".sonarlint/": true,
+        "packages/": true,
+        "tmp/": true,
+        "**/vendor/": true
+    },
+    "files.trimTrailingWhitespace": true,
+    "php.validate.enable": true,
+    "terminal.integrated.shellArgs.windows": [
+        "/K",
+        "bin\\SetEnv.bat"
+    ]
+}

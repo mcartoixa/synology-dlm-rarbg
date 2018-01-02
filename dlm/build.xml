@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="mcartoixa_rarbg.dlm" default="build">
+    <autoloader />
+
+    <property environment="env" />
+
+    <property name="build.bin.dir" value="${tmp.bin.dir}/dlm" />
+    <property name="build.obj.dir" value="${tmp.obj.dir}/dlm" />
+    <property name="build.out.dir" value="${tmp.out.dir}/bin" />
+
+    <fileset id="src.files" dir=".">
+        <type type="file" />
+        <include name="*" />
+        <exclude name="*.lock" />
+        <exclude name="build.xml" />
+    </fileset>
+
+
+
+    <target name="clean" />
+    <target name="rebuild" depends="clean,build" />
+    <target name="release" depends="rebuild,package" />
+
+    <target name="prepare.version">
+        <echo message="Preparing version ${env.DLM_PACKAGE_VERSION}" />
+        <replaceregexp file="INFO" pattern="(?&lt;=&quot;version&quot;\W)\s+&quot;\d+\.\d+\.\d+&quot;" replace=" &quot;${env.DLM_PACKAGE_VERSION}&quot;" />
+    </target>
+
+
+
+    <target name="build" depends="test">
+        <phplint haltonfailure="true">
+            <fileset dir=".">
+                <include name="*.php"/>
+            </fileset>
+        </phplint>
+
+        <copy todir="${build.bin.dir}">
+            <fileset refid="src.files" />
+        </copy>
+
+        <composer command="install" composer="${bin.dir}/composer.phar">
+            <arg value="-q" />
+            <arg value="-d" />
+            <arg path="${build.bin.dir}" />
+            <arg value="-n" />
+            <arg value="--no-dev" />
+        </composer>
+    </target>
+
+
+
+    <target name="test" depends="test.prepare">
+        <phpunit printsummary="true" bootstrap="vendor/autoload.php" haltonerror="true" haltonfailure="true">
+            <formatter type="plain" usefile="false" />
+            <batchtest>
+                <fileset dir="./tests">
+                    <include name="**/*Test*.php"/>
+                </fileset>
+            </batchtest>
+        </phpunit>
+    </target>
+
+    <target name="test.prepare">
+        <composer command="update" composer="${bin.dir}/composer.phar">
+            <arg value="-q" />
+            <arg value="-n" />
+        </composer>
+    </target>
+
+
+
+    <target name="package" depends="package.prepare,build">
+        <tar destfile="${build.out.dir}/${phing.project.name}" compression="gzip">
+            <fileset dir="${build.bin.dir}">
+                <include name="**/**" />
+                <exclude name="composer.*"/>
+            </fileset>
+         </tar>
+    </target>
+
+    <target name="package.prepare">
+        <mkdir dir="${build.out.dir}" />
+    </target>
+</project>

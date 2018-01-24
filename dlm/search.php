@@ -25,7 +25,6 @@ class SynoDLMSearchRarBG
               'format' => 'json_extended',
               'token' => strval($this->token)
         ));
-        Echo 'URL: '.$url."\n";
         curl_setopt_array($curl, array(
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_URL => $url,
@@ -50,6 +49,7 @@ class SynoDLMSearchRarBG
 
             $plugin->addResult($title, $download, $size, $datetime, $page, $hash, $seeds, $leechs, $category);
         }
+        return count($results->torrent_results);
     }
 
     private $token;

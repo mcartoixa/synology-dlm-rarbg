@@ -25,17 +25,25 @@ class RarBGToken
         {
             $this->expiration = $now;
             $this->token = NULL;
+
             $curl = curl_init();
+            $url = SynoDLMSearchRarBG::API_URL.http_build_query(array(
+                'get_token' => 'get_token',
+                'app_id' => SynoDLMSearchRarBG::APP_ID
+            ));
             curl_setopt_array($curl, array(
                 CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_URL => SynoDLMSearchRarBG::API_URL.'get_token=get_token',
+                CURLOPT_URL => $url,
                 CURLOPT_USERAGENT => RARBG_USER_AGENT,
                 CURLOPT_SSL_VERIFYHOST => false,
                 CURLOPT_SSL_VERIFYPEER => false
             ));
             $response = curl_exec($curl);
+
             $this->expiration = time() + (14 * 60);
             $this->token = json_decode($response)->token;
+
+            sleep(2); // API is rate limited
         }
     }
 

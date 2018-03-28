@@ -8,6 +8,7 @@ class SynoDLMSearchRarBG
 {
     // cf. https://torrentapi.org/apidocs_v2.txt
     const API_URL = 'https://torrentapi.org/pubapi_v2.php?';
+    const APP_ID = 'synology-dlm-rarbg';
 
     public function __construct()
     {
@@ -23,6 +24,7 @@ class SynoDLMSearchRarBG
               'sort' => 'seeders',
               'ranked' => 0,
               'format' => 'json_extended',
+              'app_id' => SynoDLMSearchRarBG::APP_ID,
               'token' => strval($this->token)
         ));
         curl_setopt_array($curl, array(
@@ -35,21 +37,25 @@ class SynoDLMSearchRarBG
     public function parse($plugin, $response)
     {
         $results = json_decode($response);
-        foreach ($results->torrent_results as $result)
+        var_dump($results);
+        if (json_last_error() === JSON_ERROR_NONE)
         {
-            $title = $result->title;
-            $download = $result->download;
-            $size = floatval($result->size);
-            $datetime = substr($result->pubdate, 0, 19);
-            $page = $result->info_page;
-            $hash = '';
-            $seeds = $result->seeders;
-            $leechs = $result->leechers;
-            $category = $result->category;
+            foreach ($results->torrent_results as $result)
+            {
+                $title = $result->title;
+                $download = $result->download;
+                $size = floatval($result->size);
+                $datetime = substr($result->pubdate, 0, 19);
+                $page = $result->info_page;
+                $hash = '';
+                $seeds = $result->seeders;
+                $leechs = $result->leechers;
+                $category = $result->category;
 
-            $plugin->addResult($title, $download, $size, $datetime, $page, $hash, $seeds, $leechs, $category);
+                $plugin->addResult($title, $download, $size, $datetime, $page, $hash, $seeds, $leechs, $category);
+            }
+            return count($results->torrent_results);
         }
-        return count($results->torrent_results);
     }
 
     private $token;
